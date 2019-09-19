@@ -24,18 +24,7 @@ namespace ObjectBinaryStream
                 return (int)(age.TotalDays / 365.25);
             }
         }
-        public int NameLength
-        {
-            get
-            {
-                return name.Length;
-            }
-        }
 
-        public Person()
-        {
-
-        }
         public Person(string name, DateTime dayOfBirth, double weight)
         {
             this.name = name;
@@ -45,17 +34,16 @@ namespace ObjectBinaryStream
 
         public override string ToString()
         {
-            return  $"{this.name} \n" +
-                    $"{this.dayOfBirth.ToShortDateString()} \n" +
-                    $"{this.weight} \n" +
-                    $"{this.Age} \n";
+            return  $"Name:\t\t{this.name} \n" +
+                    $"Date of Birth:\t{this.dayOfBirth.ToShortDateString()} \n" +
+                    $"Weight:\t\t{this.weight} \n" +
+                    $"Age:\t\t{this.Age} \n";
         }
 
         public void SavePerson(string fileName)
         {
             using (BinaryWriter writer = new BinaryWriter(File.Open(fileName, FileMode.Append)))
             {
-                writer.Write(this.NameLength);
                 writer.Write(this.name);
                 writer.Write(this.dayOfBirth.ToBinary());
                 writer.Write(this.weight);
@@ -63,7 +51,6 @@ namespace ObjectBinaryStream
         }
         public static void LoadPeople(string fileName)
         {
-            int NameLength;
             string name;
             DateTime dayOfBirth;
             double weight;
@@ -73,8 +60,7 @@ namespace ObjectBinaryStream
                 {
                     while (reader.BaseStream.Position < reader.BaseStream.Length)
                     {
-                        NameLength = reader.ReadInt32();
-                        name = new string(reader.ReadChars(NameLength+1));
+                        name = reader.ReadString();
                         dayOfBirth = DateTime.FromBinary(reader.ReadInt64());
                         weight = reader.ReadDouble();
                         People.Add(new Person(name, dayOfBirth, weight));
